@@ -1,0 +1,15 @@
+query.log
+Corefile
+*.swp
+coredns
+coredns.exe
+coredns.exe~
+kubectl
+go-test-tmpfile*
+coverage.txt
+.idea/
+.DS_Store
+*~
+.classpath
+.project
+.settings/**
