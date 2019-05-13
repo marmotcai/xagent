@@ -5,7 +5,7 @@
 local.properties
 gradle
 epg/gradle
-output/src
+output/xa
 build
 libs
 captures
