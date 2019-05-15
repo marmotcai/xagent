@@ -36,12 +36,12 @@ func TestNewServer(t *testing.T) {
 		handler http.Handler
 		certFn  certs.GetCertificateFunc
 	}{
-		{[]string{"127.0.0.1:9000"}, handler, nil},
-		{[]string{nonLoopBackIP + ":9000"}, handler, nil},
-		{[]string{"127.0.0.1:9000", nonLoopBackIP + ":9000"}, handler, nil},
-		{[]string{"127.0.0.1:9000"}, handler, getCert},
-		{[]string{nonLoopBackIP + ":9000"}, handler, getCert},
-		{[]string{"127.0.0.1:9000", nonLoopBackIP + ":9000"}, handler, getCert},
+		{[]string{"127.0.0.1:1010"}, handler, nil},
+		{[]string{nonLoopBackIP + ":1010"}, handler, nil},
+		{[]string{"127.0.0.1:1010", nonLoopBackIP + ":1010"}, handler, nil},
+		{[]string{"127.0.0.1:1010"}, handler, getCert},
+		{[]string{nonLoopBackIP + ":1010"}, handler, getCert},
+		{[]string{"127.0.0.1:1010", nonLoopBackIP + ":1010"}, handler, getCert},
 	}
 
 	for i, testCase := range testCases {

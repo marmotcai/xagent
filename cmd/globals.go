@@ -1,5 +1,5 @@
 /*
- * MinIO Cloud Storage, (C) 2015, 2016, 2017, 2018 MinIO, Inc.
+ * XAgent Cloud Storage, (C) 2015, 2016, 2017, 2018 XAgent, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 	"github.com/minio/minio/pkg/dns"
 	"github.com/minio/minio/pkg/iam/policy"
 	"github.com/minio/minio/pkg/iam/validator"
+	"go.uber.org/atomic"
 	"os"
 	"time"
 
@@ -36,23 +37,23 @@ import (
 	"github.com/fatih/color"
 	xhttp "github.com/marmotcai/xagent/cmd/http"
 	/*
-	"github.com/minio/minio/cmd/crypto"
-	xhttp "github.com/minio/minio/cmd/http"
-	"github.com/minio/minio/pkg/auth"
-	"github.com/minio/minio/pkg/certs"
-	"github.com/minio/minio/pkg/dns"
-	iampolicy "github.com/minio/minio/pkg/iam/policy"
-	"github.com/minio/minio/pkg/iam/validator"*/
+	"github.com/XAgent/XAgent/cmd/crypto"
+	xhttp "github.com/XAgent/XAgent/cmd/http"
+	"github.com/XAgent/XAgent/pkg/auth"
+	"github.com/XAgent/XAgent/pkg/certs"
+	"github.com/XAgent/XAgent/pkg/dns"
+	iampolicy "github.com/XAgent/XAgent/pkg/iam/policy"
+	"github.com/XAgent/XAgent/pkg/iam/validator"*/
 )
 
-// minio configuration related constants.
+// XAgent configuration related constants.
 const (
-	globalMinioCertExpireWarnDays = time.Hour * 24 * 30 // 30 days.
+	globalXAgentCertExpireWarnDays = time.Hour * 24 * 30 // 30 days.
 
-	globalMinioDefaultPort = "1010"
+	globalXAgentDefaultPort = "1010"
 
-	globalMinioDefaultRegion = ""
-	// This is a sha256 output of ``arn:aws:iam::minio:user/admin``,
+	globalXAgentDefaultRegion = ""
+	// This is a sha256 output of ``arn:aws:iam::XAgent:user/admin``,
 	// this is kept in present form to be compatible with S3 owner ID
 	// requirements -
 	//
@@ -61,14 +62,14 @@ const (
 	//    It is 64-character obfuscated version of the account ID.
 	// ```
 	// http://docs.aws.amazon.com/AmazonS3/latest/dev/example-walkthroughs-managing-access-example4.html
-	globalMinioDefaultOwnerID      = "02d6176db174dc93cb1b899f7c6078f08654445fe8cf1b6ce98d8855f66bdbf4"
-	globalMinioDefaultStorageClass = "STANDARD"
+	globalXAgentDefaultOwnerID      = "02d6176db174dc93cb1b899f7c6078f08654445fe8cf1b6ce98d8855f66bdbf4"
+	globalXAgentDefaultStorageClass = "STANDARD"
 	globalWindowsOSName            = "windows"
 	globalNetBSDOSName             = "netbsd"
-	globalMinioModeFS              = "mode-server-fs"
-	globalMinioModeXL              = "mode-server-xl"
-	globalMinioModeDistXL          = "mode-server-distributed-xl"
-	globalMinioModeGatewayPrefix   = "mode-gateway-"
+	globalXAgentModeFS              = "mode-server-fs"
+	globalXAgentModeXL              = "mode-server-xl"
+	globalXAgentModeDistXL          = "mode-server-distributed-xl"
+	globalXAgentModeGatewayPrefix   = "mode-gateway-"
 
 	// Add new global values here.
 )
@@ -106,6 +107,30 @@ var globalCLIContext = struct {
 	StrictS3Compat bool
 }{}
 
+
+// ConnStats - Network statistics
+// Count total input/output transferred bytes during
+// the server's life.
+type ConnStats struct {
+	totalInputBytes  atomic.Uint64
+	totalOutputBytes atomic.Uint64
+}
+
+// Increase total input bytes
+func (s *ConnStats) incInputBytes(n int) {
+	s.totalInputBytes.Add(uint64(n))
+}
+
+// Prepare new ConnStats structure
+func newConnStats() *ConnStats {
+	return &ConnStats{}
+}
+
+// Increase total output bytes
+func (s *ConnStats) incOutputBytes(n int) {
+	s.totalOutputBytes.Add(uint64(n))
+}
+
 var (
 	// Indicates the total number of erasure coded sets configured.
 	globalXLSetCount int
@@ -113,39 +138,39 @@ var (
 	// Indicates set drive count.
 	globalXLSetDriveCount int
 
-	// Indicates if the running minio server is distributed setup.
+	// Indicates if the running XAgent server is distributed setup.
 	globalIsDistXL = false
 
-	// Indicates if the running minio server is an erasure-code backend.
+	// Indicates if the running XAgent server is an erasure-code backend.
 	globalIsXL = false
 
 	// This flag is set to 'true' by default
 	globalIsBrowserEnabled = true
 
-	// This flag is set to 'true' when MINIO_BROWSER env is set.
+	// This flag is set to 'true' when XAgent_BROWSER env is set.
 	globalIsEnvBrowser = false
 
 	// Set to true if credentials were passed from env, default is false.
 	globalIsEnvCreds = false
 
-	// This flag is set to 'true' when MINIO_REGION env is set.
+	// This flag is set to 'true' when XAgent_REGION env is set.
 	globalIsEnvRegion = false
 
-	// This flag is set to 'true' when MINIO_UPDATE env is set to 'off'. Default is false.
+	// This flag is set to 'true' when XAgent_UPDATE env is set to 'off'. Default is false.
 	globalInplaceUpdateDisabled = false
 
 	// This flag is set to 'us-east-1' by default
-	globalServerRegion = globalMinioDefaultRegion
+	globalServerRegion = globalXAgentDefaultRegion
 
 	// Maximum size of internal objects parts
 	globalPutPartSize = int64(64 * 1024 * 1024)
 
-	// MinIO local server address (in `host:port` format)
-	globalMinioAddr = ""
-	// MinIO default port, can be changed through command line.
-	globalMinioPort = globalMinioDefaultPort
+	// XAgent local server address (in `host:port` format)
+	globalXAgentAddr = ""
+	// XAgent default port, can be changed through command line.
+	globalXAgentPort = globalXAgentDefaultPort
 	// Holds the host that was passed using --address
-	globalMinioHost = ""
+	globalXAgentHost = ""
 
 
 	// File to log HTTP request/response headers and body.
@@ -170,7 +195,7 @@ var (
 	globalIsStorageClass bool
 
 	globalDomainNames []string      // Root domains for virtual host style requests
-	globalDomainIPs   set.StringSet // Root domain IP address(s) for a distributed MinIO deployment
+	globalDomainIPs   set.StringSet // Root domain IP address(s) for a distributed XAgent deployment
 
 	// Allocated DNS config wrapper over etcd client.
 	globalDNSConfig dns.Config
@@ -207,10 +232,8 @@ var (
 	globalCompressExtensions = []string{".txt", ".log", ".csv", ".json"}
 	globalCompressMimeTypes  = []string{"text/csv", "text/plain", "application/json"}
 
-
 	// Is compression include extensions/content-types set.
 	globalIsEnvCompression bool
-
 
 	// Authorization validators list.
 	globalIAMValidators *validator.Validators
@@ -231,16 +254,21 @@ var (
 	// configuration must be present.
 	globalAutoEncryption bool
 
-
 	globalEndpoints EndpointList
 
+	// Default usage check interval value.
+	globalDefaultUsageCheckInterval = 12 * time.Hour // 12 hours
+	// Usage check interval value.
+	globalUsageCheckInterval = globalDefaultUsageCheckInterval
+
+	// Global server's network statistics
+	globalConnStats = newConnStats()
 	/*
 		// globalConfigSys server config system.
 		globalConfigSys *ConfigSys
 
 		globalNotificationSys *NotificationSys
 		globalPolicySys       *PolicySys
-		globalIAMSys          *IAMSys
 
 
 		// IsSSL indicates if the server is configured with SSL.
@@ -270,7 +298,7 @@ var (
 		globalPublicCerts []*x509.Certificate
 
 		globalDomainNames []string      // Root domains for virtual host style requests
-		globalDomainIPs   set.StringSet // Root domain IP address(s) for a distributed MinIO deployment
+		globalDomainIPs   set.StringSet // Root domain IP address(s) for a distributed XAgent deployment
 
 		globalListingTimeout   = newDynamicTimeout(600*time.Second, 600*time.Second) // timeout for listing related ops
 		globalObjectTimeout    = newDynamicTimeout(10*time.Minute, 600*time.Second)  // timeout for Object API related ops
@@ -426,7 +454,7 @@ var (
 	}()
 )
 
-// Returns minio global information, as a key value map.
+// Returns XAgent global information, as a key value map.
 // returned list of global values is not an exhaustive
 // list. Feel free to add new relevant fields.
 func getGlobalInfo() (globalInfo map[string]interface{}) {

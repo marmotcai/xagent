@@ -77,7 +77,7 @@ func getSetIndexes(args []string, totalSizes []uint64) (setIndexes [][]uint64, e
 	}
 
 	var customSetDriveCount uint64
-	if v := os.Getenv("MINIO_ERASURE_SET_DRIVE_COUNT"); v != "" {
+	if v := os.Getenv("XAGENT_ERASURE_SET_DRIVE_COUNT"); v != "" {
 		customSetDriveCount, err = strconv.ParseUint(v, 10, 64)
 		if err != nil {
 			return nil, uiErrInvalidErasureSetSize(err)

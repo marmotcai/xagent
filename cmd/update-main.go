@@ -289,7 +289,7 @@ func getUserAgent(mode string) string {
 		}
 	}
 
-	pcfTileVersion := os.Getenv("MINIO_PCF_TILE_VERSION")
+	pcfTileVersion := os.Getenv("XAGENT_PCF_TILE_VERSION")
 	if pcfTileVersion != "" {
 		uaAppend(" MinIO/pcf-tile-", pcfTileVersion)
 	}

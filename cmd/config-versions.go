@@ -590,10 +590,10 @@ type serverConfigV23 struct {
 
 	// Storage class configuration
 	StorageClass storageClassConfig `json:"storageclass"`
-
+/*
 	// Cache configuration
 	Cache CacheConfig `json:"cache"`
-
+*/
 	// Notification queue configuration.
 	Notify notifierV3 `json:"notify"`
 }
@@ -614,10 +614,10 @@ type serverConfigV24 struct {
 
 	// Storage class configuration
 	StorageClass storageClassConfig `json:"storageclass"`
-
+/*
 	// Cache configuration
 	Cache CacheConfig `json:"cache"`
-
+*/
 	// Notification queue configuration.
 	Notify notifierV3 `json:"notify"`
 }
@@ -641,10 +641,10 @@ type serverConfigV25 struct {
 
 	// Storage class configuration
 	StorageClass storageClassConfig `json:"storageclass"`
-
+/*
 	// Cache configuration
 	Cache CacheConfig `json:"cache"`
-
+*/
 	// Notification queue configuration.
 	Notify notifierV3 `json:"notify"`
 }
@@ -665,10 +665,10 @@ type serverConfigV26 struct {
 
 	// Storage class configuration
 	StorageClass storageClassConfig `json:"storageclass"`
-
+/*
 	// Cache configuration
 	Cache CacheConfig `json:"cache"`
-
+*/
 	// Notification queue configuration.
 	Notify notifierV3 `json:"notify"`
 }
@@ -706,10 +706,10 @@ type serverConfigV27 struct {
 
 	// Storage class configuration
 	StorageClass storageClassConfig `json:"storageclass"`
-
+/*
 	// Cache configuration
 	Cache CacheConfig `json:"cache"`
-
+*/
 	// Notification queue configuration.
 	Notify notifierV3 `json:"notify"`
 
@@ -734,10 +734,10 @@ type serverConfigV28 struct {
 
 	// Storage class configuration
 	StorageClass storageClassConfig `json:"storageclass"`
-
+/*
 	// Cache configuration
 	Cache CacheConfig `json:"cache"`
-
+*/
 	// KMS configuration
 	KMS crypto.KMSConfig `json:"kms"`
 
@@ -770,10 +770,10 @@ type serverConfigV30 struct {
 
 	// Storage class configuration
 	StorageClass storageClassConfig `json:"storageclass"`
-
+/*
 	// Cache configuration
 	Cache CacheConfig `json:"cache"`
-
+*/
 	// KMS configuration
 	KMS crypto.KMSConfig `json:"kms"`
 
@@ -798,10 +798,10 @@ type serverConfigV31 struct {
 
 	// Storage class configuration
 	StorageClass storageClassConfig `json:"storageclass"`
-
+/*
 	// Cache configuration
 	Cache CacheConfig `json:"cache"`
-
+*/
 	// KMS configuration
 	KMS crypto.KMSConfig `json:"kms"`
 
@@ -853,10 +853,10 @@ type serverConfigV32 struct {
 
 	// Storage class configuration
 	StorageClass storageClassConfig `json:"storageclass"`
-
+/*
 	// Cache configuration
 	Cache CacheConfig `json:"cache"`
-
+*/
 	// KMS configuration
 	KMS crypto.KMSConfig `json:"kms"`
 
@@ -897,10 +897,10 @@ type serverConfigV33 struct {
 
 	// Storage class configuration
 	StorageClass storageClassConfig `json:"storageclass"`
-
+/*
 	// Cache configuration
 	Cache CacheConfig `json:"cache"`
-
+*/
 	// KMS configuration
 	KMS crypto.KMSConfig `json:"kms"`
 

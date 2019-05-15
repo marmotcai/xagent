@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	minio "github.com/marmotcai/xagent/cmd"
+	xagent "github.com/marmotcai/xagent/cmd"
 )
 
 func main() {
-	minio.Main(os.Args)
+	xagent.Main(os.Args)
 }

@@ -32,7 +32,7 @@ import (
 // TLSPrivateKeyPassword is the environment variable which contains the password used
 // to decrypt the TLS private key. It must be set if the TLS private key is
 // password protected.
-const TLSPrivateKeyPassword = "MINIO_CERT_PASSWD"
+const TLSPrivateKeyPassword = "XAGENT_CERT_PASSWD"
 
 func parsePublicCertFile(certFile string) (x509Certs []*x509.Certificate, err error) {
 	// Read certificate file.
@@ -101,7 +101,7 @@ func getRootCAs(certsCAsDir string) (*x509.CertPool, error) {
 
 // load an X509 key pair (private key , certificate) from the provided
 // paths. The private key may be encrypted and is decrypted using the
-// ENV_VAR: MINIO_CERT_PASSWD.
+// ENV_VAR: XAGENT_CERT_PASSWD.
 func loadX509KeyPair(certFile, keyFile string) (tls.Certificate, error) {
 	certPEMBlock, err := ioutil.ReadFile(certFile)
 	if err != nil {

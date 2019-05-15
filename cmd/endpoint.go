@@ -686,9 +686,9 @@ func CreateEndpoints(serverAddr string, args ...[]string) (string, EndpointList,
 		return serverAddr, endpoints, setupType, err
 	}
 
-	_, dok := os.LookupEnv("MINIO_DOMAIN")
-	_, eok := os.LookupEnv("MINIO_ETCD_ENDPOINTS")
-	_, iok := os.LookupEnv("MINIO_PUBLIC_IPS")
+	_, dok := os.LookupEnv("XAGENT_DOMAIN")
+	_, eok := os.LookupEnv("XAGENT_ETCD_ENDPOINTS")
+	_, iok := os.LookupEnv("XAGENT_PUBLIC_IPS")
 	if dok && eok && !iok {
 		updateDomainIPs(uniqueArgs)
 	}
@@ -715,11 +715,11 @@ func GetLocalPeer(endpoints EndpointList) (localPeer string) {
 	if peerSet.IsEmpty() {
 		// Local peer can be empty in FS or Erasure coded mode.
 		// If so, return globalMinioHost + globalMinioPort value.
-		if globalMinioHost != "" {
-			return net.JoinHostPort(globalMinioHost, globalMinioPort)
+		if globalXAgentHost != "" {
+			return net.JoinHostPort(globalXAgentHost, globalXAgentPort)
 		}
 
-		return net.JoinHostPort("127.0.0.1", globalMinioPort)
+		return net.JoinHostPort("127.0.0.1", globalXAgentPort)
 	}
 	return peerSet.ToSlice()[0]
 }
@@ -734,7 +734,7 @@ func GetRemotePeers(endpoints EndpointList) []string {
 
 		peer := endpoint.Host
 		if endpoint.IsLocal {
-			if _, port := mustSplitHostPort(peer); port == globalMinioPort {
+			if _, port := mustSplitHostPort(peer); port == globalXAgentPort {
 				continue
 			}
 		}

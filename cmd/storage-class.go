@@ -33,9 +33,9 @@ const (
 	// Standard storage class
 	standardStorageClass = "STANDARD"
 	// Reduced redundancy storage class environment variable
-	reducedRedundancyStorageClassEnv = "MINIO_STORAGE_CLASS_RRS"
+	reducedRedundancyStorageClassEnv = "XAGENT_STORAGE_CLASS_RRS"
 	// Standard storage class environment variable
-	standardStorageClassEnv = "MINIO_STORAGE_CLASS_STANDARD"
+	standardStorageClassEnv = "XAGENT_STORAGE_CLASS_STANDARD"
 	// Supported storage class scheme is EC
 	supportedStorageClassScheme = "EC"
 	// Minimum parity disks
@@ -164,7 +164,7 @@ func validateParity(ssParity, rrsParity int) (err error) {
 }
 
 // Returns the data and parity drive count based on storage class
-// If storage class is set using the env vars MINIO_STORAGE_CLASS_RRS and MINIO_STORAGE_CLASS_STANDARD
+// If storage class is set using the env vars XAGENT_STORAGE_CLASS_RRS and XAGENT_STORAGE_CLASS_STANDARD
 // or config.json fields
 // -- corresponding values are returned
 // If storage class is not set during startup, default values are returned

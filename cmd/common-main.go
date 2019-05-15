@@ -43,20 +43,20 @@ func checkUpdate(mode string) {
 		if globalInplaceUpdateDisabled {
 			logger.StartupMessage(updateMsg)
 		} else {
-			logger.StartupMessage(prepareUpdateMessage("Run `minio update`", latestReleaseTime.Sub(currentReleaseTime)))
+			logger.StartupMessage(prepareUpdateMessage("Run `xagent update`", latestReleaseTime.Sub(currentReleaseTime)))
 		}
 	}
 }
 
 // Load logger targets based on user's configuration
 func loadLoggers() {
-	auditEndpoint, ok := os.LookupEnv("MINIO_AUDIT_LOGGER_HTTP_ENDPOINT")
+	auditEndpoint, ok := os.LookupEnv("XAGENT_AUDIT_LOGGER_HTTP_ENDPOINT")
 	if ok {
 		// Enable audit HTTP logging through ENV.
 		logger.AddAuditTarget(http.New(auditEndpoint, NewCustomHTTPTransport()))
 	}
 
-	loggerEndpoint, ok := os.LookupEnv("MINIO_LOGGER_HTTP_ENDPOINT")
+	loggerEndpoint, ok := os.LookupEnv("XAGENT_LOGGER_HTTP_ENDPOINT")
 	if ok {
 		// Enable HTTP logging through ENV.
 		logger.AddTarget(http.New(loggerEndpoint, NewCustomHTTPTransport()))
@@ -140,7 +140,7 @@ func handleCommonCmdArgs(ctx *cli.Context) {
 
 	// Fetch address option
 	globalCLIContext.Addr = ctx.GlobalString("address")
-	if globalCLIContext.Addr == "" || globalCLIContext.Addr == ":"+globalMinioDefaultPort {
+	if globalCLIContext.Addr == "" || globalCLIContext.Addr == ":"+globalXAgentDefaultPort {
 		globalCLIContext.Addr = ctx.String("address")
 	}
 
@@ -187,14 +187,14 @@ const (
 func handleCommonEnvVars() {
 	compressEnvDelimiter := ","
 	// Start profiler if env is set.
-	if profiler := os.Getenv("_MINIO_PROFILER"); profiler != "" {
+	if profiler := os.Getenv("_XAGENT_PROFILER"); profiler != "" {
 		var err error
 		globalProfiler, err = startProfiler(profiler, "")
 		logger.FatalIf(err, "Unable to setup a profiler")
 	}
 
-	accessKey := os.Getenv("MINIO_ACCESS_KEY")
-	secretKey := os.Getenv("MINIO_SECRET_KEY")
+	accessKey := os.Getenv("XAGENT_ACCESS_KEY")
+	secretKey := os.Getenv("XAGENT_SECRET_KEY")
 	if accessKey != "" && secretKey != "" {
 		cred, err := auth.CreateCredentials(accessKey, secretKey)
 		if err != nil {
@@ -207,10 +207,10 @@ func handleCommonEnvVars() {
 		globalActiveCred = cred
 	}
 
-	if browser := os.Getenv("MINIO_BROWSER"); browser != "" {
+	if browser := os.Getenv("XAGENT_BROWSER"); browser != "" {
 		browserFlag, err := ParseBoolFlag(browser)
 		if err != nil {
-			logger.Fatal(uiErrInvalidBrowserValue(nil).Msg("Unknown value `%s`", browser), "Invalid MINIO_BROWSER value in environment variable")
+			logger.Fatal(uiErrInvalidBrowserValue(nil).Msg("Unknown value `%s`", browser), "Invalid XAGENT_BROWSER value in environment variable")
 		}
 
 		// browser Envs are set globally, this does not represent
@@ -219,14 +219,14 @@ func handleCommonEnvVars() {
 		globalIsBrowserEnabled = bool(browserFlag)
 	}
 
-	traceFile := os.Getenv("MINIO_HTTP_TRACE")
+	traceFile := os.Getenv("XAGENT_HTTP_TRACE")
 	if traceFile != "" {
 		var err error
 		globalHTTPTraceFile, err = os.OpenFile(traceFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 		logger.FatalIf(err, "error opening file %s", traceFile)
 	}
 
-	etcdEndpointsEnv, ok := os.LookupEnv("MINIO_ETCD_ENDPOINTS")
+	etcdEndpointsEnv, ok := os.LookupEnv("XAGENT_ETCD_ENDPOINTS")
 	if ok {
 		etcdEndpoints := strings.Split(etcdEndpointsEnv, ",")
 
@@ -244,8 +244,8 @@ func handleCommonEnvVars() {
 		if etcdSecure {
 			// This is only to support client side certificate authentication
 			// https://coreos.com/etcd/docs/latest/op-guide/security.html
-			etcdClientCertFile, ok1 := os.LookupEnv("MINIO_ETCD_CLIENT_CERT")
-			etcdClientCertKey, ok2 := os.LookupEnv("MINIO_ETCD_CLIENT_CERT_KEY")
+			etcdClientCertFile, ok1 := os.LookupEnv("XAGENT_ETCD_CLIENT_CERT")
+			etcdClientCertKey, ok2 := os.LookupEnv("XAGENT_ETCD_CLIENT_CERT_KEY")
 			var getClientCertificate func(*tls.CertificateRequestInfo) (*tls.Certificate, error)
 			if ok1 && ok2 {
 				getClientCertificate = func(unused *tls.CertificateRequestInfo) (*tls.Certificate, error) {
@@ -273,18 +273,18 @@ func handleCommonEnvVars() {
 		logger.FatalIf(err, "Unable to initialize etcd with %s", etcdEndpoints)*/
 	}
 
-	v, ok := os.LookupEnv("MINIO_DOMAIN")
+	v, ok := os.LookupEnv("XAGENT_DOMAIN")
 	if ok {
 		for _, domainName := range strings.Split(v, ",") {
 			if _, ok = dns2.IsDomainName(domainName); !ok {
 				logger.Fatal(uiErrInvalidDomainValue(nil).Msg("Unknown value `%s`", domainName),
-					"Invalid MINIO_DOMAIN value in environment variable")
+					"Invalid XAGENT_DOMAIN value in environment variable")
 			}
 			globalDomainNames = append(globalDomainNames, domainName)
 		}
 	}
 
-	minioEndpointsEnv, ok := os.LookupEnv("MINIO_PUBLIC_IPS")
+	minioEndpointsEnv, ok := os.LookupEnv("XAGENT_PUBLIC_IPS")
 	if ok {
 		minioEndpoints := strings.Split(minioEndpointsEnv, ",")
 		var domainIPs = set.NewStringSet()
@@ -293,7 +293,7 @@ func handleCommonEnvVars() {
 				// Checking if the IP is a DNS entry.
 				addrs, err := net.LookupHost(endpoint)
 				if err != nil {
-					logger.FatalIf(err, "Unable to initialize MinIO server with [%s] invalid entry found in MINIO_PUBLIC_IPS", endpoint)
+					logger.FatalIf(err, "Unable to initialize MinIO server with [%s] invalid entry found in XAGENT_PUBLIC_IPS", endpoint)
 				}
 				for _, addr := range addrs {
 					domainIPs.Add(addr)
@@ -311,49 +311,49 @@ func handleCommonEnvVars() {
 /*
 	if len(globalDomainNames) != 0 && !globalDomainIPs.IsEmpty() && globalEtcdClient != nil {
 		var err error
-		globalDNSConfig, err = dns.NewCoreDNS(globalDomainNames, globalDomainIPs, globalMinioPort, globalEtcdClient)
+		globalDNSConfig, err = dns.NewCoreDNS(globalDomainNames, globalDomainIPs, globalXAgentPort, globalEtcdClient)
 		logger.FatalIf(err, "Unable to initialize DNS config for %s.", globalDomainNames)
 	}
-*/
-	if drives := os.Getenv("MINIO_CACHE_DRIVES"); drives != "" {
+
+	if drives := os.Getenv("XAGENT_CACHE_DRIVES"); drives != "" {
 		driveList, err := parseCacheDrives(strings.Split(drives, cacheEnvDelimiter))
 		if err != nil {
-			logger.Fatal(err, "Unable to parse MINIO_CACHE_DRIVES value (%s)", drives)
+			logger.Fatal(err, "Unable to parse XAGENT_CACHE_DRIVES value (%s)", drives)
 		}
 		globalCacheDrives = driveList
 		globalIsDiskCacheEnabled = true
 	}
 
-	if excludes := os.Getenv("MINIO_CACHE_EXCLUDE"); excludes != "" {
+	if excludes := os.Getenv("XAGENT_CACHE_EXCLUDE"); excludes != "" {
 		excludeList, err := parseCacheExcludes(strings.Split(excludes, cacheEnvDelimiter))
 		if err != nil {
-			logger.Fatal(err, "Unable to parse MINIO_CACHE_EXCLUDE value (`%s`)", excludes)
+			logger.Fatal(err, "Unable to parse XAGENT_CACHE_EXCLUDE value (`%s`)", excludes)
 		}
 		globalCacheExcludes = excludeList
 	}
-
-	if expiryStr := os.Getenv("MINIO_CACHE_EXPIRY"); expiryStr != "" {
+*/
+	if expiryStr := os.Getenv("XAGENT_CACHE_EXPIRY"); expiryStr != "" {
 		expiry, err := strconv.Atoi(expiryStr)
 		if err != nil {
-			logger.Fatal(uiErrInvalidCacheExpiryValue(err), "Unable to parse MINIO_CACHE_EXPIRY value (`%s`)", expiryStr)
+			logger.Fatal(uiErrInvalidCacheExpiryValue(err), "Unable to parse XAGENT_CACHE_EXPIRY value (`%s`)", expiryStr)
 		}
 		globalCacheExpiry = expiry
 	}
 
-	if maxUseStr := os.Getenv("MINIO_CACHE_MAXUSE"); maxUseStr != "" {
+	if maxUseStr := os.Getenv("XAGENT_CACHE_MAXUSE"); maxUseStr != "" {
 		maxUse, err := strconv.Atoi(maxUseStr)
 		if err != nil {
-			logger.Fatal(uiErrInvalidCacheMaxUse(err), "Unable to parse MINIO_CACHE_MAXUSE value (`%s`)", maxUseStr)
+			logger.Fatal(uiErrInvalidCacheMaxUse(err), "Unable to parse XAGENT_CACHE_MAXUSE value (`%s`)", maxUseStr)
 		}
 		// maxUse should be a valid percentage.
 		if maxUse > 0 && maxUse <= 100 {
 			globalCacheMaxUse = maxUse
 		}
 	}
-	// In place update is true by default if the MINIO_UPDATE is not set
-	// or is not set to 'off', if MINIO_UPDATE is set to 'off' then
+	// In place update is true by default if the XAGENT_UPDATE is not set
+	// or is not set to 'off', if XAGENT_UPDATE is set to 'off' then
 	// in-place update is off.
-	globalInplaceUpdateDisabled = strings.EqualFold(os.Getenv("MINIO_UPDATE"), "off")
+	globalInplaceUpdateDisabled = strings.EqualFold(os.Getenv("XAGENT_UPDATE"), "off")
 
 	// Validate and store the storage class env variables only for XL/Dist XL setups
 	if globalIsXL {
@@ -386,10 +386,10 @@ func handleCommonEnvVars() {
 	}
 
 	// Get WORM environment variable.
-	if worm := os.Getenv("MINIO_WORM"); worm != "" {
+	if worm := os.Getenv("XAGENT_WORM"); worm != "" {
 		wormFlag, err := ParseBoolFlag(worm)
 		if err != nil {
-			logger.Fatal(uiErrInvalidWormValue(nil).Msg("Unknown value `%s`", worm), "Invalid MINIO_WORM value in environment variable")
+			logger.Fatal(uiErrInvalidWormValue(nil).Msg("Unknown value `%s`", worm), "Invalid XAGENT_WORM value in environment variable")
 		}
 
 		// worm Envs are set globally, this does not represent
@@ -398,25 +398,25 @@ func handleCommonEnvVars() {
 		globalWORMEnabled = bool(wormFlag)
 	}
 
-	if compress := os.Getenv("MINIO_COMPRESS"); compress != "" {
+	if compress := os.Getenv("XAGENT_COMPRESS"); compress != "" {
 		globalIsCompressionEnabled = strings.EqualFold(compress, "true")
 	}
 
-	compressExtensions := os.Getenv("MINIO_COMPRESS_EXTENSIONS")
-	compressMimeTypes := os.Getenv("MINIO_COMPRESS_MIMETYPES")
+	compressExtensions := os.Getenv("XAGENT_COMPRESS_EXTENSIONS")
+	compressMimeTypes := os.Getenv("XAGENT_COMPRESS_MIMETYPES")
 	if compressExtensions != "" || compressMimeTypes != "" {
 		globalIsEnvCompression = true
 		if compressExtensions != "" {
 			extensions, err := parseCompressIncludes(strings.Split(compressExtensions, compressEnvDelimiter))
 			if err != nil {
-				logger.Fatal(err, "Invalid MINIO_COMPRESS_EXTENSIONS value (`%s`)", extensions)
+				logger.Fatal(err, "Invalid XAGENT_COMPRESS_EXTENSIONS value (`%s`)", extensions)
 			}
 			globalCompressExtensions = extensions
 		}
 		if compressMimeTypes != "" {
 			contenttypes, err := parseCompressIncludes(strings.Split(compressMimeTypes, compressEnvDelimiter))
 			if err != nil {
-				logger.Fatal(err, "Invalid MINIO_COMPRESS_MIMETYPES value (`%s`)", contenttypes)
+				logger.Fatal(err, "Invalid XAGENT_COMPRESS_MIMETYPES value (`%s`)", contenttypes)
 			}
 			globalCompressMimeTypes = contenttypes
 		}

@@ -226,7 +226,7 @@ func checkPortAvailability(port string) (err error) {
 }
 
 // extractHostPort - extracts host/port from many address formats
-// such as, ":9000", "localhost:9000", "http://localhost:9000/"
+// such as, ":1010", "localhost:1010", "http://localhost:1010/"
 func extractHostPort(hostAddr string) (string, string, error) {
 	var addr, scheme string
 
@@ -256,8 +256,8 @@ func extractHostPort(hostAddr string) (string, string, error) {
 	}
 
 	// At this point, addr can be one of the following form:
-	//	":9000"
-	//	"localhost:9000"
+	//	":1010"
+	//	"localhost:1010"
 	//	"localhost" <- in this case, we check for scheme
 
 	host, port, err := net.SplitHostPort(addr)
@@ -298,7 +298,7 @@ func isLocalHost(host string) (bool, error) {
 
 // sameLocalAddrs - returns true if two addresses, even with different
 // formats, point to the same machine, e.g:
-//  ':9000' and 'http://localhost:9000/' will return true
+//  ':1010' and 'http://localhost:1010/' will return true
 func sameLocalAddrs(addr1, addr2 string) (bool, error) {
 
 	// Extract host & port from given parameters
@@ -364,8 +364,8 @@ func CheckLocalServerAddr(serverAddr string) error {
 	}
 
 	// 0.0.0.0 is a wildcard address and refers to local network
-	// addresses. I.e, 0.0.0.0:9000 like ":9000" refers to port
-	// 9000 on localhost.
+	// addresses. I.e, 0.0.0.0:1010 like ":1010" refers to port
+	// 1010 on localhost.
 	if host != "" && host != net.IPv4zero.String() && host != net.IPv6zero.String() {
 		isLocalHost, err := isLocalHost(host)
 		if err != nil {

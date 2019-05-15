@@ -50,25 +50,25 @@ var (
 	uiErrInvalidCacheDrivesValue = newUIErrFn(
 		"Invalid cache drive value",
 		"Please check the value in this ENV variable",
-		"MINIO_CACHE_DRIVES: Mounted drives or directories are delimited by `;`",
+		"XAGENT_CACHE_DRIVES: Mounted drives or directories are delimited by `;`",
 	)
 
 	uiErrInvalidCacheExcludesValue = newUIErrFn(
 		"Invalid cache excludes value",
 		"Please check the passed value",
-		"MINIO_CACHE_EXCLUDE: Cache exclusion patterns are delimited by `;`",
+		"XAGENT_CACHE_EXCLUDE: Cache exclusion patterns are delimited by `;`",
 	)
 
 	uiErrInvalidCacheExpiryValue = newUIErrFn(
 		"Invalid cache expiry value",
 		"Please check the passed value",
-		"MINIO_CACHE_EXPIRY: Valid cache expiry duration is in days.",
+		"XAGENT_CACHE_EXPIRY: Valid cache expiry duration is in days.",
 	)
 
 	uiErrInvalidCacheMaxUse = newUIErrFn(
 		"Invalid cache max-use value",
 		"Please check the passed value",
-		"MINIO_CACHE_MAXUSE: Valid cache max-use value between 0-100.",
+		"XAGENT_CACHE_MAXUSE: Valid cache max-use value between 0-100.",
 	)
 
 	uiErrInvalidCredentials = newUIErrFn(
@@ -81,13 +81,13 @@ Secret key should be in between 8 and 40 characters.`,
 	uiErrEnvCredentialsMissingGateway = newUIErrFn(
 		"Credentials missing",
 		"Please set your credentials in the environment",
-		`In Gateway mode, access and secret keys should be specified via environment variables MINIO_ACCESS_KEY and MINIO_SECRET_KEY respectively.`,
+		`In Gateway mode, access and secret keys should be specified via environment variables XAGENT_ACCESS_KEY and XAGENT_SECRET_KEY respectively.`,
 	)
 
 	uiErrEnvCredentialsMissingDistributed = newUIErrFn(
 		"Credentials missing",
 		"Please set your credentials in the environment",
-		`In distributed server mode, access and secret keys should be specified via environment variables MINIO_ACCESS_KEY and MINIO_SECRET_KEY respectively.`,
+		`In distributed server mode, access and secret keys should be specified via environment variables XAGENT_ACCESS_KEY and XAGENT_SECRET_KEY respectively.`,
 	)
 
 	uiErrInvalidErasureEndpoints = newUIErrFn(
@@ -105,8 +105,8 @@ Secret key should be in between 8 and 40 characters.`,
 	uiErrStorageClassValue = newUIErrFn(
 		"Invalid storage class value",
 		"Please check the value",
-		`MINIO_STORAGE_CLASS_STANDARD: Format "EC:<Default_Parity_Standard_Class>" (e.g. "EC:3"). This sets the number of parity disks for MinIO server in Standard mode. Objects are stored in Standard mode, if storage class is not defined in Put request.
-MINIO_STORAGE_CLASS_RRS: Format "EC:<Default_Parity_Reduced_Redundancy_Class>" (e.g. "EC:3"). This sets the number of parity disks for MinIO server in Reduced Redundancy mode. Objects are stored in Reduced Redundancy mode, if Put request specifies RRS storage class.
+		`XAGENT_STORAGE_CLASS_STANDARD: Format "EC:<Default_Parity_Standard_Class>" (e.g. "EC:3"). This sets the number of parity disks for MinIO server in Standard mode. Objects are stored in Standard mode, if storage class is not defined in Put request.
+XAGENT_STORAGE_CLASS_RRS: Format "EC:<Default_Parity_Reduced_Redundancy_Class>" (e.g. "EC:3"). This sets the number of parity disks for MinIO server in Reduced Redundancy mode. Objects are stored in Reduced Redundancy mode, if Put request specifies RRS storage class.
 Refer to the link https://github.com/minio/minio/tree/master/docs/erasure/storage-class for more information.`,
 	)
 
@@ -119,10 +119,10 @@ Refer to the link https://github.com/minio/minio/tree/master/docs/erasure/storag
 	uiErrInvalidAddressFlag = newUIErrFn(
 		"--address input is invalid",
 		"Please check --address parameter",
-		`--address binds to a specific ADDRESS:PORT, ADDRESS can be an IPv4/IPv6 address or hostname (default port is ':9000')
+		`--address binds to a specific ADDRESS:PORT, ADDRESS can be an IPv4/IPv6 address or hostname (default port is ':1010')
 	Examples: --address ':443'
-		  --address '172.16.34.31:9000'
-		  --address '[fe80::da00:a6c8:e3ae:ddd7]:9000'`,
+		  --address '172.16.34.31:1010'
+		  --address '[fe80::da00:a6c8:e3ae:ddd7]:1010'`,
 	)
 
 	uiErrInvalidFSEndpoint = newUIErrFn(
@@ -202,13 +202,13 @@ Example 1:
 	uiErrInvalidCompressionIncludesValue = newUIErrFn(
 		"Invalid compression include value",
 		"Please check the passed value",
-		"Compress extensions/mime-types are delimited by `,`. For eg, MINIO_COMPRESS_ATTR=\"A,B,C\"",
+		"Compress extensions/mime-types are delimited by `,`. For eg, XAGENT_COMPRESS_ATTR=\"A,B,C\"",
 	)
 
 	uiErrInvalidGWSSEValue = newUIErrFn(
 		"Invalid gateway SSE value",
 		"Please check the passed value",
-		"MINIO_GATEWAY_SSE: Gateway SSE accepts only C and S3 as valid values. Delimit by `;` to set more than one value",
+		"XAGENT_GATEWAY_SSE: Gateway SSE accepts only C and S3 as valid values. Delimit by `;` to set more than one value",
 	)
 
 	uiErrInvalidGWSSEEnvValue = newUIErrFn(

@@ -36,13 +36,13 @@ const (
 func (setupType SetupType) String() string {
 	switch setupType {
 	case FSSetupType:
-		return globalMinioModeFS
+		return globalXAgentModeFS
 	case XLSetupType:
-		return globalMinioModeXL
+		return globalXAgentModeXL
 	case DistXLSetupType:
-		return globalMinioModeDistXL
+		return globalXAgentModeDistXL
 	case GatewaySetupType:
-		return globalMinioModeGatewayPrefix
+		return globalXAgentModeGatewayPrefix
 	}
 
 	return ""

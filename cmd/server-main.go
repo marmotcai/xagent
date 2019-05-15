@@ -1,5 +1,5 @@
 /*
- * MinIO Cloud Storage, (C) 2015, 2016, 2017, 2018 MinIO, Inc.
+ * XAgent Cloud Storage, (C) 2015, 2016, 2017, 2018 XAgent, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"github.com/minio/dsync"
 	"github.com/minio/minio/cmd/logger"
+	"github.com/minio/minio/pkg/certs"
 	"strings"
 
 	/*"context"
@@ -31,9 +34,10 @@ import (
 		"strings"
 		"syscall"
 
-		"github.com/minio/dsync"
-		xhttp "github.com/minio/minio/cmd/http"
-		"github.com/minio/minio/pkg/certs"*/
+		"github.com/XAgent/dsync"
+
+		"github.com/XAgent/XAgent/pkg/certs"*/
+	xhttp "github.com/marmotcai/xagent/cmd/http"
 	"github.com/minio/cli"
 	"os"
 	"os/signal"
@@ -48,7 +52,7 @@ func init() {
 var serverFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:  "address",
-		Value: ":" + globalMinioDefaultPort,
+		Value: ":" + globalXAgentDefaultPort,
 		Usage: "bind to a specific ADDRESS:PORT, ADDRESS can be an IP or hostname",
 	},
 }
@@ -77,66 +81,66 @@ FLAGS:
   {{end}}{{end}}
 ENVIRONMENT VARIABLES:
   ACCESS:
-     MINIO_ACCESS_KEY: Custom username or access key of minimum 3 characters in length.
-     MINIO_SECRET_KEY: Custom password or secret key of minimum 8 characters in length.
+     XAgent_ACCESS_KEY: Custom username or access key of minimum 3 characters in length.
+     XAgent_SECRET_KEY: Custom password or secret key of minimum 8 characters in length.
 
   BROWSER:
-     MINIO_BROWSER: To disable web browser access, set this value to "off".
+     XAgent_BROWSER: To disable web browser access, set this value to "off".
 
   CACHE:
-     MINIO_CACHE_DRIVES: List of mounted drives or directories delimited by ";".
-     MINIO_CACHE_EXCLUDE: List of cache exclusion patterns delimited by ";".
-     MINIO_CACHE_EXPIRY: Cache expiry duration in days.
-     MINIO_CACHE_MAXUSE: Maximum permitted usage of the cache in percentage (0-100).
+     XAgent_CACHE_DRIVES: List of mounted drives or directories delimited by ";".
+     XAgent_CACHE_EXCLUDE: List of cache exclusion patterns delimited by ";".
+     XAgent_CACHE_EXPIRY: Cache expiry duration in days.
+     XAgent_CACHE_MAXUSE: Maximum permitted usage of the cache in percentage (0-100).
 
   DOMAIN:
-     MINIO_DOMAIN: To enable virtual-host-style requests, set this value to MinIO host domain name.
+     XAgent_DOMAIN: To enable virtual-host-style requests, set this value to XAgent host domain name.
 
   WORM:
-     MINIO_WORM: To turn on Write-Once-Read-Many in server, set this value to "on".
+     XAgent_WORM: To turn on Write-Once-Read-Many in server, set this value to "on".
 
   BUCKET-DNS:
-     MINIO_DOMAIN:    To enable bucket DNS requests, set this value to MinIO host domain name.
-     MINIO_PUBLIC_IPS: To enable bucket DNS requests, set this value to list of MinIO host public IP(s) delimited by ",".
-     MINIO_ETCD_ENDPOINTS: To enable bucket DNS requests, set this value to list of etcd endpoints delimited by ",".
+     XAgent_DOMAIN:    To enable bucket DNS requests, set this value to XAgent host domain name.
+     XAgent_PUBLIC_IPS: To enable bucket DNS requests, set this value to list of XAgent host public IP(s) delimited by ",".
+     XAgent_ETCD_ENDPOINTS: To enable bucket DNS requests, set this value to list of etcd endpoints delimited by ",".
 
    KMS:
-     MINIO_SSE_VAULT_ENDPOINT: To enable Vault as KMS,set this value to Vault endpoint.
-     MINIO_SSE_VAULT_APPROLE_ID: To enable Vault as KMS,set this value to Vault AppRole ID.
-     MINIO_SSE_VAULT_APPROLE_SECRET: To enable Vault as KMS,set this value to Vault AppRole Secret ID.
-     MINIO_SSE_VAULT_KEY_NAME: To enable Vault as KMS,set this value to Vault encryption key-ring name.
+     XAgent_SSE_VAULT_ENDPOINT: To enable Vault as KMS,set this value to Vault endpoint.
+     XAgent_SSE_VAULT_APPROLE_ID: To enable Vault as KMS,set this value to Vault AppRole ID.
+     XAgent_SSE_VAULT_APPROLE_SECRET: To enable Vault as KMS,set this value to Vault AppRole Secret ID.
+     XAgent_SSE_VAULT_KEY_NAME: To enable Vault as KMS,set this value to Vault encryption key-ring name.
 
 EXAMPLES:
-  1. Start minio server on "/home/shared" directory.
+  1. Start XAgent server on "/home/shared" directory.
      $ {{.HelpName}} /home/shared
 
-  2. Start minio server bound to a specific ADDRESS:PORT.
-     $ {{.HelpName}} --address 192.168.1.101:9000 /home/shared
+  2. Start XAgent server bound to a specific ADDRESS:PORT.
+     $ {{.HelpName}} --address 192.168.1.101:1010 /home/shared
 
-  3. Start minio server and enable virtual-host-style requests.
-     $ export MINIO_DOMAIN=mydomain.com
-     $ {{.HelpName}} --address mydomain.com:9000 /mnt/export
+  3. Start XAgent server and enable virtual-host-style requests.
+     $ export XAgent_DOMAIN=mydomain.com
+     $ {{.HelpName}} --address mydomain.com:1010 /mnt/export
 
-  4. Start erasure coded minio server on a node with 64 drives.
+  4. Start erasure coded XAgent server on a node with 64 drives.
      $ {{.HelpName}} /mnt/export{1...64}
 
-  5. Start distributed minio server on an 32 node setup with 32 drives each. Run following command on all the 32 nodes.
-     $ export MINIO_ACCESS_KEY=minio
-     $ export MINIO_SECRET_KEY=miniostorage
+  5. Start distributed XAgent server on an 32 node setup with 32 drives each. Run following command on all the 32 nodes.
+     $ export XAgent_ACCESS_KEY=XAgent
+     $ export XAgent_SECRET_KEY=XAgentstorage
      $ {{.HelpName}} http://node{1...32}.example.com/mnt/export/{1...32}
 
-  6. Start minio server with edge caching enabled.
-     $ export MINIO_CACHE_DRIVES="/mnt/drive1;/mnt/drive2;/mnt/drive3;/mnt/drive4"
-     $ export MINIO_CACHE_EXCLUDE="bucket1/*;*.png"
-     $ export MINIO_CACHE_EXPIRY=40
-     $ export MINIO_CACHE_MAXUSE=80
+  6. Start XAgent server with edge caching enabled.
+     $ export XAgent_CACHE_DRIVES="/mnt/drive1;/mnt/drive2;/mnt/drive3;/mnt/drive4"
+     $ export XAgent_CACHE_EXCLUDE="bucket1/*;*.png"
+     $ export XAgent_CACHE_EXPIRY=40
+     $ export XAgent_CACHE_MAXUSE=80
      $ {{.HelpName}} /home/shared
 
-  7. Start minio server with KMS enabled.
-     $ export MINIO_SSE_VAULT_APPROLE_ID=9b56cc08-8258-45d5-24a3-679876769126
-     $ export MINIO_SSE_VAULT_APPROLE_SECRET=4e30c52f-13e4-a6f5-0763-d50e8cb4321f
-     $ export MINIO_SSE_VAULT_ENDPOINT=https://vault-endpoint-ip:8200
-     $ export MINIO_SSE_VAULT_KEY_NAME=my-minio-key
+  7. Start XAgent server with KMS enabled.
+     $ export XAgent_SSE_VAULT_APPROLE_ID=9b56cc08-8258-45d5-24a3-679876769126
+     $ export XAgent_SSE_VAULT_APPROLE_SECRET=4e30c52f-13e4-a6f5-0763-d50e8cb4321f
+     $ export XAgent_SSE_VAULT_ENDPOINT=https://vault-endpoint-ip:8200
+     $ export XAgent_SSE_VAULT_KEY_NAME=my-XAgent-key
      $ {{.HelpName}} /home/shared
 `,
 }
@@ -144,7 +148,7 @@ EXAMPLES:
 // Checks if endpoints are either available through environment
 // or command line, returns false if both fails.
 func endpointsPresent(ctx *cli.Context) bool {
-	_, ok := os.LookupEnv("MINIO_ENDPOINTS")
+	_, ok := os.LookupEnv("XAgent_ENDPOINTS")
 	if !ok {
 		ok = ctx.Args().Present()
 	}
@@ -167,23 +171,23 @@ func serverHandleCmdArgs(ctx *cli.Context) {
 		logger.FatalIf(uErr, "Unable to validate passed endpoints")
 	}
 
-	endpoints := strings.Fields(os.Getenv("MINIO_ENDPOINTS"))
+	endpoints := strings.Fields(os.Getenv("XAGENT_ENDPOINTS"))
 	if len(endpoints) > 0 {
-		globalMinioAddr, globalEndpoints, setupType, globalXLSetCount, globalXLSetDriveCount, err = createServerEndpoints(globalCLIContext.Addr, endpoints...)
+		globalXAgentAddr, globalEndpoints, setupType, globalXLSetCount, globalXLSetDriveCount, err = createServerEndpoints(globalCLIContext.Addr, endpoints...)
 	} else {
-		globalMinioAddr, globalEndpoints, setupType, globalXLSetCount, globalXLSetDriveCount, err = createServerEndpoints(globalCLIContext.Addr, ctx.Args()...)
+		globalXAgentAddr, globalEndpoints, setupType, globalXLSetCount, globalXLSetDriveCount, err = createServerEndpoints(globalCLIContext.Addr, ctx.Args()...)
 	}
 	logger.FatalIf(err, "Invalid command line arguments")
 
 	logger.LogIf(context.Background(), checkEndpointsSubOptimal(ctx, setupType, globalEndpoints))
 
-	globalMinioHost, globalMinioPort = mustSplitHostPort(globalMinioAddr)
+	globalXAgentHost, globalXAgentPort = mustSplitHostPort(globalXAgentAddr)
 
 	// On macOS, if a process already listens on LOCALIPADDR:PORT, net.Listen() falls back
-	// to IPv6 address ie minio will start listening on IPv6 address whereas another
-	// (non-)minio process is listening on IPv4 of given port.
+	// to IPv6 address ie XAgent will start listening on IPv6 address whereas another
+	// (non-)XAgent process is listening on IPv4 of given port.
 	// To avoid this error sutiation we check for port availability.
-	logger.FatalIf(checkPortAvailability(globalMinioPort), "Unable to start the server")
+	logger.FatalIf(checkPortAvailability(globalXAgentPort), "Unable to start the server")
 
 	globalIsXL = (setupType == XLSetupType)
 	globalIsDistXL = (setupType == DistXLSetupType)
@@ -196,7 +200,7 @@ func serverHandleEnvVars() {
 	// Handle common environment variables.
 	handleCommonEnvVars()
 
-	if serverRegion := os.Getenv("MINIO_REGION"); serverRegion != "" {
+	if serverRegion := os.Getenv("XAgent_REGION"); serverRegion != "" {
 		// region Envs are set globally.
 		globalIsEnvRegion = true
 		globalServerRegion = serverRegion
@@ -204,7 +208,8 @@ func serverHandleEnvVars() {
 
 }
 
-// serverMain handler called for 'minio server' command.
+
+// serverMain handler called for 'XAgent server' command.
 func serverMain(ctx *cli.Context) {
 	if ctx.Args().First() == "help" || !endpointsPresent(ctx) {
 		cli.ShowCommandHelpAndExit(ctx, "server", 1)
@@ -243,21 +248,21 @@ func serverMain(ctx *cli.Context) {
 
 	if !globalCLIContext.Quiet {
 		// Check for new updates from dl.min.io.
-		mode := globalMinioModeFS
+		mode := globalXAgentModeFS
 		if globalIsDistXL {
-			mode = globalMinioModeDistXL
+			mode = globalXAgentModeDistXL
 		} else if globalIsXL {
-			mode = globalMinioModeXL
+			mode = globalXAgentModeXL
 		}
 		checkUpdate(mode)
 	}
-	/*
+
 	// FIXME: This code should be removed in future releases and we should have mandatory
 	// check for ENVs credentials under distributed setup. Until all users migrate we
 	// are intentionally providing backward compatibility.
 	{
 		// Check for backward compatibility and newer style.
-		if !globalIsEnvCreds && globalIsDistXL {
+		if !globalIsEnvCreds && globalIsDistXL {/*
 			// Try to load old config file if any, for backward compatibility.
 			var config = &serverConfig{}
 			if _, err = Load(getConfigFile(), config); err == nil {
@@ -273,11 +278,11 @@ func serverMain(ctx *cli.Context) {
 			if globalActiveCred.IsValid() {
 				// Credential is valid don't throw an error instead print a message regarding deprecation of 'config.json'
 				// based model and proceed to use it for now in distributed setup.
-				logger.Info(`Supplying credentials from your 'config.json' is **DEPRECATED**, Access key and Secret key in distributed server mode is expected to be specified with environment variables MINIO_ACCESS_KEY and MINIO_SECRET_KEY. This approach will become mandatory in future releases, please migrate to this approach soon.`)
+				logger.Info(`Supplying credentials from your 'config.json' is **DEPRECATED**, Access key and Secret key in distributed server mode is expected to be specified with environment variables XAgent_ACCESS_KEY and XAgent_SECRET_KEY. This approach will become mandatory in future releases, please migrate to this approach soon.`)
 			} else {
 				// Credential is not available anywhere by both means, we cannot start distributed setup anymore, fail eagerly.
 				logger.Fatal(uiErrEnvCredentialsMissingDistributed(nil), "Unable to initialize the server in distributed mode")
-			}
+			}*/
 		}
 	}
 
@@ -292,12 +297,13 @@ func serverMain(ctx *cli.Context) {
 		}
 	}
 
+
 	// Initialize name space lock.
 	initNSLock(globalIsDistXL)
-
+	/*
 	// Init global heal state
 	initAllHealState(globalIsXL)
-
+	*/
 	// Configure server.
 	var handler http.Handler
 	handler, err = configureServerHandler(globalEndpoints)
@@ -310,13 +316,13 @@ func serverMain(ctx *cli.Context) {
 		getCert = globalTLSCerts.GetCertificate
 	}
 
-	globalHTTPServer = xhttp.NewServer([]string{globalMinioAddr}, criticalErrorHandler{handler}, getCert)
+	globalHTTPServer = xhttp.NewServer([]string{globalXAgentAddr}, handler/*criticalErrorHandler{handler}*/, getCert)
 	globalHTTPServer.UpdateBytesReadFunc = globalConnStats.incInputBytes
 	globalHTTPServer.UpdateBytesWrittenFunc = globalConnStats.incOutputBytes
 	go func() {
 		globalHTTPServerErrorCh <- globalHTTPServer.Start()
 	}()
-
+/*
 	newObject, err := newObjectLayer(globalEndpoints)
 	if err != nil {
 		// Stop watching for any certificate changes.

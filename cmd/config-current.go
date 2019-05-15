@@ -135,13 +135,13 @@ func (s *serverConfig) GetWorm() bool {
 }
 
 // SetCacheConfig sets the current cache config
-func (s *serverConfig) SetCacheConfig(drives, exclude []string, expiry int, maxuse int) {
+func (s *serverConfig) SetCacheConfig(drives, exclude []string, expiry int, maxuse int) {/*
 	s.Cache.Drives = drives
 	s.Cache.Exclude = exclude
 	s.Cache.Expiry = expiry
-	s.Cache.MaxUse = maxuse
+	s.Cache.MaxUse = maxuse*/
 }
-
+/*
 // GetCacheConfig gets the current cache config
 func (s *serverConfig) GetCacheConfig() CacheConfig {
 	if globalIsDiskCacheEnabled {
@@ -156,7 +156,7 @@ func (s *serverConfig) GetCacheConfig() CacheConfig {
 		return CacheConfig{}
 	}
 	return s.Cache
-}
+}*/
 
 func (s *serverConfig) Validate() error {
 	if s == nil {
@@ -280,17 +280,17 @@ func (s *serverConfig) loadFromEnvs() {
 		s.SetCompressionConfig(globalCompressExtensions, globalCompressMimeTypes)
 	}
 
-	if jwksURL, ok := os.LookupEnv("MINIO_IAM_JWKS_URL"); ok {
+	if jwksURL, ok := os.LookupEnv("XAGENT_IAM_JWKS_URL"); ok {
 		if u, err := xnet.ParseURL(jwksURL); err == nil {
 			s.OpenID.JWKS.URL = u
 			logger.FatalIf(s.OpenID.JWKS.PopulatePublicKey(), "Unable to populate public key from JWKS URL")
 		}
 	}
 
-	if opaURL, ok := os.LookupEnv("MINIO_IAM_OPA_URL"); ok {
+	if opaURL, ok := os.LookupEnv("XAGENT_IAM_OPA_URL"); ok {
 		if u, err := xnet.ParseURL(opaURL); err == nil {
 			s.Policy.OPA.URL = u
-			s.Policy.OPA.AuthToken = os.Getenv("MINIO_IAM_OPA_AUTHTOKEN")
+			s.Policy.OPA.AuthToken = os.Getenv("XAGENT_IAM_OPA_AUTHTOKEN")
 		}
 	}
 }
@@ -415,8 +415,8 @@ func (s *serverConfig) ConfigDiff(t *serverConfig) string {
 		return "Region configuration differs"
 	case s.StorageClass != t.StorageClass:
 		return "StorageClass configuration differs"
-	case !reflect.DeepEqual(s.Cache, t.Cache):
-		return "Cache configuration differs"
+/*	case !reflect.DeepEqual(s.Cache, t.Cache):
+		return "Cache configuration differs"*/
 	case !reflect.DeepEqual(s.Compression, t.Compression):
 		return "Compression configuration differs"
 	case !reflect.DeepEqual(s.Notify.AMQP, t.Notify.AMQP):
@@ -459,17 +459,17 @@ func newServerConfig() *serverConfig {
 	srvCfg := &serverConfig{
 		Version:    serverConfigVersion,
 		Credential: cred,
-		Region:     globalMinioDefaultRegion,
+		Region:     globalXAgentDefaultRegion,
 		StorageClass: storageClassConfig{
 			Standard: storageClass{},
 			RRS:      storageClass{},
 		},
-		Cache: CacheConfig{
+/*		Cache: CacheConfig{
 			Drives:  []string{},
 			Exclude: []string{},
 			Expiry:  globalCacheExpiry,
 			MaxUse:  globalCacheMaxUse,
-		},
+		},*/
 		KMS:    crypto.KMSConfig{},
 		Notify: notifier{},
 		Compression: compressionConfig{
@@ -500,12 +500,12 @@ func newServerConfig() *serverConfig {
 	srvCfg.Notify.Kafka["1"] = target.KafkaArgs{}
 	srvCfg.Notify.Webhook = make(map[string]target.WebhookArgs)
 	srvCfg.Notify.Webhook["1"] = target.WebhookArgs{}
-
+/*
 	srvCfg.Cache.Drives = make([]string, 0)
 	srvCfg.Cache.Exclude = make([]string, 0)
 	srvCfg.Cache.Expiry = globalCacheExpiry
 	srvCfg.Cache.MaxUse = globalCacheMaxUse
-
+*/
 	// Console logging is on by default
 	srvCfg.Logger.Console.Enabled = true
 	// Create an example of HTTP logger
@@ -528,13 +528,13 @@ func (s *serverConfig) loadToCachedConfigs() {
 	if !globalIsStorageClass {
 		globalStandardStorageClass, globalRRStorageClass = s.GetStorageClass()
 	}
-	if !globalIsDiskCacheEnabled {
+/*	if !globalIsDiskCacheEnabled {
 		cacheConf := s.GetCacheConfig()
 		globalCacheDrives = cacheConf.Drives
 		globalCacheExcludes = cacheConf.Exclude
 		globalCacheExpiry = cacheConf.Expiry
 		globalCacheMaxUse = cacheConf.MaxUse
-	}
+	}*/
 	if err := Environment.LookupKMSConfig(s.KMS); err != nil {
 		logger.FatalIf(err, "Unable to setup the KMS")
 	}

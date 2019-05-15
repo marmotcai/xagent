@@ -29,51 +29,51 @@ const (
 	// EnvKMSMasterKey is the environment variable used to specify
 	// a KMS master key used to protect SSE-S3 per-object keys.
 	// Valid values must be of the from: "KEY_ID:32_BYTE_HEX_VALUE".
-	EnvKMSMasterKey = "MINIO_SSE_MASTER_KEY"
+	EnvKMSMasterKey = "XAGENT_SSE_MASTER_KEY"
 
 	// EnvAutoEncryption is the environment variable used to en/disable
 	// SSE-S3 auto-encryption. SSE-S3 auto-encryption, if enabled,
 	// requires a valid KMS configuration and turns any non-SSE-C
 	// request into an SSE-S3 request.
 	// If present EnvAutoEncryption must be either "on" or "off".
-	EnvAutoEncryption = "MINIO_SSE_AUTO_ENCRYPTION"
+	EnvAutoEncryption = "XAGENT_SSE_AUTO_ENCRYPTION"
 )
 
 const (
 	// EnvVaultEndpoint is the environment variable used to specify
 	// the vault HTTPS endpoint.
-	EnvVaultEndpoint = "MINIO_SSE_VAULT_ENDPOINT"
+	EnvVaultEndpoint = "XAGENT_SSE_VAULT_ENDPOINT"
 
 	// EnvVaultAuthType is the environment variable used to specify
 	// the authentication type for vault.
-	EnvVaultAuthType = "MINIO_SSE_VAULT_AUTH_TYPE"
+	EnvVaultAuthType = "XAGENT_SSE_VAULT_AUTH_TYPE"
 
 	// EnvVaultAppRoleID is the environment variable used to specify
 	// the vault AppRole ID.
-	EnvVaultAppRoleID = "MINIO_SSE_VAULT_APPROLE_ID"
+	EnvVaultAppRoleID = "XAGENT_SSE_VAULT_APPROLE_ID"
 
 	// EnvVaultAppSecretID is the environment variable used to specify
 	// the vault AppRole secret corresponding to the AppRole ID.
-	EnvVaultAppSecretID = "MINIO_SSE_VAULT_APPROLE_SECRET"
+	EnvVaultAppSecretID = "XAGENT_SSE_VAULT_APPROLE_SECRET"
 
 	// EnvVaultKeyVersion is the environment variable used to specify
 	// the vault key version.
-	EnvVaultKeyVersion = "MINIO_SSE_VAULT_KEY_VERSION"
+	EnvVaultKeyVersion = "XAGENT_SSE_VAULT_KEY_VERSION"
 
 	// EnvVaultKeyName is the environment variable used to specify
 	// the vault named key-ring. In the S3 context it's referred as
 	// customer master key ID (CMK-ID).
-	EnvVaultKeyName = "MINIO_SSE_VAULT_KEY_NAME"
+	EnvVaultKeyName = "XAGENT_SSE_VAULT_KEY_NAME"
 
 	// EnvVaultCAPath is the environment variable used to specify the
 	// path to a directory of PEM-encoded CA cert files. These CA cert
 	// files are used to authenticate MinIO to Vault over mTLS.
-	EnvVaultCAPath = "MINIO_SSE_VAULT_CAPATH"
+	EnvVaultCAPath = "XAGENT_SSE_VAULT_CAPATH"
 
 	// EnvVaultNamespace is the environment variable used to specify
 	// vault namespace. The vault namespace is used if the enterprise
 	// version of Hashicorp Vault is used.
-	EnvVaultNamespace = "MINIO_SSE_VAULT_NAMESPACE"
+	EnvVaultNamespace = "XAGENT_SSE_VAULT_NAMESPACE"
 )
 
 // Environment provides functions for accessing environment
