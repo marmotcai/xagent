@@ -1,4 +1,4 @@
-package main
+package proxy
 
 // This logging trick is learnt from a post by Rob Pike
 // https://groups.google.com/d/msg/golang-nuts/gU7oQGoCkmg/j3nNxuS2O_sJ

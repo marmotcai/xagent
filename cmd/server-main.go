@@ -46,13 +46,13 @@ import (
 
 func init() {
 	logger.Init(GOPATH, GOROOT)
-	logger.RegisterUIError(fmtError)
+	logger.RegisterUIError(FmtError)
 }
 
 var serverFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:  "address",
-		Value: ":" + globalXAgentDefaultPort,
+		Value: ":" + GlobalXAgentDefaultPort,
 		Usage: "bind to a specific ADDRESS:PORT, ADDRESS can be an IP or hostname",
 	},
 }
@@ -60,7 +60,7 @@ var serverFlags = []cli.Flag{
 var serverCmd = cli.Command{
 	Name:   "server",
 	Usage:  "start agent server",
-	Flags:  append(serverFlags, globalFlags...),
+	Flags:  append(serverFlags, GlobalFlags...),
 	Action: serverMain,
 	CustomHelpTemplate: `NAME:
   {{.HelpName}} - {{.Usage}}
@@ -208,7 +208,6 @@ func serverHandleEnvVars() {
 
 }
 
-
 // serverMain handler called for 'XAgent server' command.
 func serverMain(ctx *cli.Context) {
 	if ctx.Args().First() == "help" || !endpointsPresent(ctx) {
@@ -248,13 +247,13 @@ func serverMain(ctx *cli.Context) {
 
 	if !globalCLIContext.Quiet {
 		// Check for new updates from dl.min.io.
-		mode := globalXAgentModeFS
+	/*	mode := globalXAgentModeFS
 		if globalIsDistXL {
 			mode = globalXAgentModeDistXL
 		} else if globalIsXL {
 			mode = globalXAgentModeXL
 		}
-		checkUpdate(mode)
+		checkUpdate(mode)*/
 	}
 
 	// FIXME: This code should be removed in future releases and we should have mandatory

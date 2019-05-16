@@ -140,7 +140,7 @@ func handleCommonCmdArgs(ctx *cli.Context) {
 
 	// Fetch address option
 	globalCLIContext.Addr = ctx.GlobalString("address")
-	if globalCLIContext.Addr == "" || globalCLIContext.Addr == ":"+globalXAgentDefaultPort {
+	if globalCLIContext.Addr == "" || globalCLIContext.Addr == ":"+GlobalXAgentDefaultPort {
 		globalCLIContext.Addr = ctx.String("address")
 	}
 

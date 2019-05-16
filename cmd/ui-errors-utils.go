@@ -103,7 +103,7 @@ func errorToUIErr(err error) uiErr {
 
 // fmtError() converts a fatal error message to a more clear error
 // using some colors
-func fmtError(introMsg string, err error, jsonFlag bool) string {
+func FmtError(introMsg string, err error, jsonFlag bool) string {
 	renderedTxt := ""
 	uiErr := errorToUIErr(err)
 	// JSON print

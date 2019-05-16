@@ -1,6 +1,6 @@
 // Proxy statistics.
 
-package main
+package proxy
 
 import (
 	"sync"

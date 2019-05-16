@@ -50,7 +50,7 @@ import (
 const (
 	globalXAgentCertExpireWarnDays = time.Hour * 24 * 30 // 30 days.
 
-	globalXAgentDefaultPort = "1010"
+	GlobalXAgentDefaultPort = "1010"
 
 	globalXAgentDefaultRegion = ""
 	// This is a sha256 output of ``arn:aws:iam::XAgent:user/admin``,
@@ -168,7 +168,7 @@ var (
 	// XAgent local server address (in `host:port` format)
 	globalXAgentAddr = ""
 	// XAgent default port, can be changed through command line.
-	globalXAgentPort = globalXAgentDefaultPort
+	globalXAgentPort = GlobalXAgentDefaultPort
 	// Holds the host that was passed using --address
 	globalXAgentHost = ""
 

@@ -1,4 +1,4 @@
-package main
+package proxy
 
 import (
 	"bytes"
@@ -183,6 +183,8 @@ func (hp *httpProxy) Serve(wg *sync.WaitGroup, quit <-chan struct{}) {
 			debug.Println("exiting the http listner")
 			break
 		}
+
+		info.Printf("http proxy(%s) accept\n", ln.Addr())
 		c := newClientConn(conn, hp)
 		go c.serve()
 

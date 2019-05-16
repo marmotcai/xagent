@@ -1,4 +1,4 @@
-package main
+package proxy
 
 var directDomainList = []string{
 	// 视频

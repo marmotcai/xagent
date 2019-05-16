@@ -1,6 +1,6 @@
 // +build darwin freebsd linux netbsd openbsd
 
-package main
+package proxy
 
 import (
 	"net"

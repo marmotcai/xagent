@@ -4,14 +4,15 @@ import (
 	"github.com/minio/mc/pkg/console"
 	"github.com/minio/minio/pkg/trie"
 	"github.com/minio/minio/pkg/words"
-	_ "github.com/spf13/viper"
 	"github.com/minio/cli"
+
+	_ "github.com/spf13/viper"
 	"os"
 	"path/filepath"
 	"sort"
 )
-// global flags for minio.
-var globalFlags = []cli.Flag{
+// global flags for xagent.
+var GlobalFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:  "config-dir, C",
 		Value: defaultConfigDir.Get(),
@@ -36,8 +37,8 @@ var globalFlags = []cli.Flag{
 	},
 }
 
-// Help template for minio.
-var minioHelpTemplate = `NAME:
+// Help template for xagent.
+var xagentHelpTemplate = `NAME:
   {{.Name}} - {{.Usage}}
 
 DESCRIPTION:
@@ -57,10 +58,10 @@ VERSION:
 	`{{ "\n"}}`
 
 func newApp(name string) *cli.App {
-	// Collection of minio commands currently supported are.
+	// Collection of xagent commands currently supported are.
 	commands := []cli.Command{}
 
-	// Collection of minio commands currently supported in a trie tree.
+	// Collection of xagent commands currently supported in a trie tree.
 	commandsTree := trie.NewTrie()
 
 	// registerCommand registers a cli command.
@@ -94,6 +95,7 @@ func newApp(name string) *cli.App {
 
 	// Register all commands.
 	registerCommand(serverCmd)
+	registerCommand(proxyCmd)
 /*	registerCommand(gatewayCmd)
 	registerCommand(updateCmd)
 	registerCommand(versionCmd)
@@ -110,13 +112,13 @@ func newApp(name string) *cli.App {
 	app.Version = Version
 	app.Usage = "XAgent Server."
 	app.Description = `XAgent is an agent server.`
-	app.Flags = globalFlags
-	app.HideVersion = true     // Hide `--version` flag, we already have `minio version`.
-	// app.HideHelpCommand = true // Hide `help, h` command, we already have `minio --help`.
+	app.Flags = GlobalFlags
+	app.HideVersion = true     // Hide `--version` flag, we already have `xagent version`.
+	// app.HideHelpCommand = true // Hide `help, h` command, we already have `xagent --help`.
 	app.Commands = commands
-	app.CustomAppHelpTemplate = minioHelpTemplate
+	app.CustomAppHelpTemplate = xagentHelpTemplate
 	app.CommandNotFound = func(ctx *cli.Context, command string) {
-		console.Printf("‘%s’ is not a xagent sub-command. See ‘minio --help’.\n", command)
+		console.Printf("‘%s’ is not a xagent sub-command. See ‘xagent --help’.\n", command)
 		closestCommands := findClosestCommands(command)
 		if len(closestCommands) > 0 {
 			console.Println()
@@ -133,9 +135,9 @@ func newApp(name string) *cli.App {
 }
 
 
-// Main main for minio server.
+// Main main for xagent server.
 func Main(args []string) {
-	// Set the minio app name.
+	// Set the xagent app name.
 	appName := filepath.Base(args[0])
 
 	// Run the app - exit on error.
